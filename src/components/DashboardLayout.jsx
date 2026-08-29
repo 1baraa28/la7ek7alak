@@ -1,17 +1,21 @@
-import { Outlet } from 'react-router-dom'
-import Sidebar from './Sidebar'
-import Header from './Header'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import Header from './Header';
 
 export default function DashboardLayout() {
   return (
-    <div className="flex h-screen bg-cream" dir="rtl">
+    <div dir="rtl" className="flex min-h-screen bg-[#FBF9F6] font-sans text-gray-800">
+      {/* 1. القائمة الجانبية الثابتة على اليمين */}
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+
+      {/* 2. منطقة المحتوى الرئيسي */}
+      <main className="flex-1 p-8 overflow-y-auto">
         <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
-        </main>
-      </div>
+        
+        {/* هنا تنعرض الصفحات المتغيرة (AdminHome أو ActiveStories) تلقائياً */}
+        <Outlet />
+      </main>
     </div>
-  )
+  );
 }

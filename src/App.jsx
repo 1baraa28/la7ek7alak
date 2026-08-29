@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import AdminHome from './pages/AdminHome'
+import ActiveStories from './pages/ActiveStories'
 import MerchantHome from './pages/MerchantHome'
-import ProtectedRoute from './components/ProtectedRoute'
+import Settings from './pages/Settings' // السطر الجديد الأول
 import DashboardLayout from './components/DashboardLayout'
 
 export default function App() {
@@ -11,22 +12,15 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
 
-        {/* مسارات محمية: أدمن فقط */}
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          <Route element={<DashboardLayout />}>
-            <Route path="/admin" element={<AdminHome />} />
-            {/* باقي صفحات الأدمن (إدارة التجار...) من مسؤولية المطور الثاني */}
-          </Route>
+        {/* تم تعطيل ProtectedRoute مؤقتاً هنا لفتح الواجهات فوراً */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/admin" element={<AdminHome />} />
+          <Route path="/admin/stories" element={<ActiveStories />} />
+          <Route path="/admin/settings" element={<Settings />} /> {/* السطر الجديد الثاني */}
+          <Route path="/merchant" element={<MerchantHome />} />
         </Route>
 
-        {/* مسارات محمية: تاجر فقط */}
-        <Route element={<ProtectedRoute allowedRoles={['merchant']} />}>
-          <Route element={<DashboardLayout />}>
-            <Route path="/merchant" element={<MerchantHome />} />
-          </Route>
-        </Route>
-
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/admin/stories" replace />} />
       </Routes>
     </BrowserRouter>
   )

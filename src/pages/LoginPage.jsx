@@ -1,9 +1,21 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. استدعاء useNavigate
 import AuthLayout from '../components/AuthLayout';
 import FormField from '../components/FormField';
 
 export default function LoginPage() {
-  const [errorMessage, setErrorMessage] = useState("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate(); // 2. إنشاء دالة التوجيه
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // إذا كان ProtectedRoute يفحص الصلاحية من localStorage
+    localStorage.setItem('role', 'admin'); 
+
+    // 3. التوجيه المباشر لواجهة إدارة الستوريز عند الضغط على الزر
+    navigate('/admin/stories'); 
+  };
 
   return (
     <AuthLayout title="لوحة تحكم الأدمن" subtitle="لحّق حالك - إدارة المنصة">
@@ -16,7 +28,7 @@ export default function LoginPage() {
         </div>
       )}
 
-      <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+      <form className="space-y-5" onSubmit={handleSubmit}>
         {/* حقل البريد الإلكتروني للأدمن */}
         <FormField 
           label="البريد الإلكتروني للأدمن"
@@ -35,7 +47,7 @@ export default function LoginPage() {
         {/* زر تسجيل الدخول */}
         <button
           type="submit"
-          className="w-full bg-[#301C12] hover:bg-[#322117] text-white font-bold py-3.5 rounded-xl transition duration-200 mt-2 text-sm shadow-sm"
+          className="w-full bg-[#301C12] hover:bg-[#322117] text-white font-bold py-3.5 rounded-xl transition duration-200 mt-2 text-sm shadow-sm cursor-pointer"
         >
           تسجيل الدخول للوحة التحكم
         </button>
