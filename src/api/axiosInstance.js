@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  // تم تغيير الرابط الاحتياطي ليرتبط بسيرفر Railway بدلاً من localhost
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://la7ek-7alak-production.up.railway.app/api',
 })
 
 axiosInstance.interceptors.request.use((config) => {
