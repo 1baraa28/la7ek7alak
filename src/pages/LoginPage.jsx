@@ -5,9 +5,8 @@ import FormField from '../components/FormField';
 import axiosInstance from '../api/axiosInstance';
 
 export default function LoginPage() {
-  // وضع بيانات الأدمن الافتراضية المرسلة من الباك إند
-  const [email, setEmail] = useState('ibasheer264@gmail.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -15,31 +14,43 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMessage('');
+    setLoading(true);
 
     try {
-      // 1. تغيير المسار إلى /login لتفادي خطأ 404
+      // 1. إرسال بيانات الدخول المباشرة من الـ State
       const response = await axiosInstance.post('/login', {
         email,
         password,
       });
 
-      // 2. استخراج التوكن وحفظه في localStorage
-      const token = response.data?.token || response.data?.data?.token;
+      const data = response.data;
+      const token = data?.token || data?.data?.token;
+      const userRole = data?.user?.role || data?.role;
+
+      // 2. التحقق من صلاحيات الأدمن
+      if (userRole && userRole !== 'admin') {
+        setErrorMessage('عذراً، هذا الحساب غير مصرح له بالدخول للوحة تحكم الأدمن');
+        return;
+      }
+
+      // 3. حفظ التوكن والتوجيه المباشر
       if (token) {
         localStorage.setItem('token', token);
       }
-      localStorage.setItem('role', 'admin');
+      localStorage.setItem('role', userRole || 'admin');
 
-      // 3. التوجيه المباشر للوحة التحكم بعد نجاح الدخول
       navigate('/admin/stories');
     } catch (error) {
       console.error('فشل تسجيل الدخول:', error);
-      
-      setErrorMessage(
-        error.response?.data?.message || 'بيانات الدخول غير صحيحة، حاول مجدداً'
-      );
+
+      // استخراج رسالة الخطأ القادمة من الباك إند
+      const serverError = 
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        'بيانات الدخول غير صحيحة، حاول مجدداً';
+
+      setErrorMessage(serverError);
     } finally {
       setLoading(false);
     }
@@ -48,9 +59,9 @@ export default function LoginPage() {
   return (
     <AuthLayout title="لوحة تحكم الأدمن" subtitle="لحّق حالك - إدارة المنصة">
       
-      {/* تنبيه الخطأ */}
+      {/* صندوق تنبيه الأخطاء */}
       {errorMessage && (
-        <div className="bg-[#fde8e8] text-[#e05252] text-xs font-medium rounded-xl p-3.5 mb-6 text-center flex items-center justify-center space-x-1.5 space-x-reverse">
+        <div className="bg-[#fde8e8] text-[#e05252] text-xs font-medium rounded-xl p-3.5 mb-6 text-center flex items-center justify-center space-x-1.5 space-x-reverse border border-red-200">
           <span>⚠️</span>
           <span>{errorMessage}</span>
         </div>
@@ -61,8 +72,10 @@ export default function LoginPage() {
         <FormField 
           label="البريد الإلكتروني للأدمن"
           type="email"
+          name="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          placeholder="admin@gmail.com"
           borderColor="border-2 border-[#8E5439]"
           required
         />
@@ -71,9 +84,11 @@ export default function LoginPage() {
         <FormField 
           label="كلمة المرور"
           type="password"
+          name="password"
           isPassword={true}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
           required
         />
 
