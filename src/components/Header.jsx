@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, Menu, X } from 'lucide-react'
 
-export default function Header() {
+export default function Header({ toggleSidebar, isSidebarOpen }) {
   const navigate = useNavigate()
   const userName = localStorage.getItem('userName') || 'المستخدم'
 
@@ -14,7 +14,16 @@ export default function Header() {
 
   return (
     <header className="h-16 shrink-0 bg-card border-b border-black/5 flex items-center justify-between px-6">
-      <div />
+      {/* استبدلنا الـ <div /> الفراغ بزر الفتح والإغلاق */}
+      <button
+        onClick={toggleSidebar}
+        className="p-2 rounded-xl text-ink hover:bg-field transition cursor-pointer flex items-center justify-center"
+        title={isSidebarOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+      >
+        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {/* باقي العناصر كما هي */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 text-sm font-semibold text-ink">
           <span className="w-8 h-8 rounded-full bg-field flex items-center justify-center">
@@ -24,7 +33,7 @@ export default function Header() {
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1.5 text-sm font-semibold text-red-500 hover:text-red-600"
+          className="flex items-center gap-1.5 text-sm font-semibold text-red-500 hover:text-red-600 cursor-pointer"
         >
           <LogOut size={16} />
           تسجيل الخروج
